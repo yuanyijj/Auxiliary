@@ -93,37 +93,7 @@ public class XueXiService extends AccessibilityService {
             LogUtil.v(TAG1, "what:" + msg.what + ";");
             switch (msg.what) {
                 case -1://点击返回
-                    /*if (!isHome()) {
-                        LogUtil.v(TAG1, "videoNum=" + videoNum + ";videoNumMax=" + videoNumMax);
-                        LogUtil.v(TAG1, "television_videoNum=" + television_videoNum + ";videoNumMax_television=" + videoNumMax_television);
-                        LogUtil.v(TAG1, "bookNum=" + bookNum + ";bookNumMax=" + bookNumMax);
-                        isSearWebView = false;
-                        updateShow("全局检测，非主页视频界面返回" + isPingLun());
-                        XueXiService.this.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
-                        if (videoNum >= videoNumMax) {//播放短视频完成
-                            updateShow("设定的短视频数量，已经播放完毕" + videoNum + "个短视频");
-                            ServiceUtils.performClickWithID(XueXiService.this, television);
-                            mHandler.sendEmptyMessageDelayed(ActionType.Home_Television.getStatus(), 1000);//跳转播放长视频
-                        } else if (videoNum < videoNumMax) {//播放的短视频小于规定的短视频个数
-                            mHandler.sendEmptyMessageDelayed(ActionType.Home_Video.getStatus(), 1000);//跳转播放短视频
-                        } else if (television_videoNum >= videoNumMax_television) {//播放长视频完成
-                            updateShow("设定的短视频数量，已经播放完毕" + videoNum + "个短视频");
-                            ServiceUtils.performClickWithID(XueXiService.this, article);
-                            mHandler.sendEmptyMessageDelayed(ActionType.Home_Article.getStatus(), 1000);//跳转文章
-                        } else if (television_videoNum < videoNumMax_television) {//播放的长视频小于规定的长视频个数
-                            mHandler.sendEmptyMessageDelayed(ActionType.Home_Television.getStatus(), 1000);//跳转播放长视频
-                        } else if (bookNum >= bookNumMax) {
 
-                            updateShow("设定的文章数量，已经播放完毕" + bookNum + "个短视频");
-                            updateShow("可以退出");
-                            mHandler.sendEmptyMessageDelayed(ActionType.Query_score.getStatus(), 1000);//查询分数
-                            *//*ServiceUtils.performClickWithID(XueXiService.this, article);
-                            mHandler.sendEmptyMessageDelayed(ActionType.Home_Article.getStatus(), 1000);//跳转文章*//*
-
-                        } else if (bookNum < bookNumMax) {//播放的长视频小于规定的短视频个数
-                            mHandler.sendEmptyMessageDelayed(ActionType.Home_Article.getStatus(), 1000);//跳转播放长视频
-                        }
-                    }*/
                     break;
                 case 10://短视频返回
                     if (!isHome()) {
@@ -137,6 +107,7 @@ public class XueXiService extends AccessibilityService {
                             mHandler.sendEmptyMessageDelayed(ActionType.Home_Television.getStatus(), 3000);//跳转播放长视频
                         } else if (videoNum < videoNumMax) {//播放的短视频小于规定的短视频个数s
                             LogUtil.v(TAG1, "播放的短视频小于规定的短视频个数:videoNum=" + videoNum + ";videoNumMax=" + videoNumMax);
+                            mHandler.sendEmptyMessageDelayed(ActionType.Home_Refresh.getStatus(), 1000);//刷新
                             mHandler.sendEmptyMessageDelayed(ActionType.Home_Video.getStatus(), 3000);//跳转播放短视频
                         }
                     }
@@ -153,7 +124,7 @@ public class XueXiService extends AccessibilityService {
                             mHandler.sendEmptyMessageDelayed(ActionType.Home_Article.getStatus(), 3000);//跳转文章
                         } else if (television_videoNum < videoNumMax_television) {//播放的长视频小于规定的长视频个数
                             LogUtil.v(TAG1, "播放的长视频小于规定的长视频个数:television_videoNum=" + television_videoNum + ";videoNumMax_television=" + videoNumMax_television);
-
+                            mHandler.sendEmptyMessageDelayed(ActionType.Home_Refresh.getStatus(), 1000);//刷新
                             mHandler.sendEmptyMessageDelayed(ActionType.Home_Television.getStatus(), 3000);//跳转播放长视频
                         }
                     }
@@ -172,6 +143,7 @@ public class XueXiService extends AccessibilityService {
                             mHandler.sendEmptyMessageDelayed(ActionType.Home_Article.getStatus(), 1000);//跳转文章*/
                         } else if (bookNum < bookNumMax) {//播放的文章小于规定的文章个数
                             LogUtil.v(TAG1, "播放的文章小于规定的文章个数:bookNum=" + bookNum + ";bookNumMax=" + bookNumMax);
+                            mHandler.sendEmptyMessageDelayed(ActionType.Home_Refresh.getStatus(), 1000);//刷新
                             mHandler.sendEmptyMessageDelayed(ActionType.Home_Article.getStatus(), 3000);//跳转播放长视频
                         }
                     }
@@ -179,8 +151,8 @@ public class XueXiService extends AccessibilityService {
                 case 0://刷新
                     updateShow("刷新页面开始滚动");
                     path = new Path();
-                    path.moveTo(400, MainActivity.height / 2 + 200);
-                    path.lineTo(800, 0);
+                    path.moveTo(400, MainActivity.height / 2);
+                    path.lineTo(400, 0);
                     dispatchGestureMove(path, 20);
                     break;
                 case 1://播放短视频
@@ -192,7 +164,6 @@ public class XueXiService extends AccessibilityService {
                 case 3://首页——文章
                     if (isHome()) {
                         ServiceUtils.performClickWithID(XueXiService.this, article);
-
                         bookNum++;
                         updateShow("点击文章");
                         dispatchGestureClick(400, MainActivity.height / 3);//模拟点击一条文章
@@ -203,8 +174,8 @@ public class XueXiService extends AccessibilityService {
                             mHandler.sendEmptyMessageDelayed(ActionType.Article_collection.getStatus(), 2000);//去收藏
                         }
                         //去执行阅读
-                        mHandler.sendEmptyMessageDelayed(ActionType.Article_Back.getStatus(), bookTime);
                         updateShow("第" + bookNum + "篇," + "阅读文章" + bookTime / 1000 + "秒，请勿关闭");
+                        mHandler.sendEmptyMessageDelayed(ActionType.Article_Back.getStatus(), bookTime);
                     } else {
                         updateShow("未检测到首页，请自动恢复《学习强国》至首页");
                         mHandler.sendEmptyMessageDelayed(ActionType.Home_Article.getStatus(), 1000);
@@ -448,33 +419,28 @@ public class XueXiService extends AccessibilityService {
     }
 
 
-
     //点击视频
     public void clickVideo() {
-        ServiceUtils.performClickWithID(XueXiService.this, video);
+        //ServiceUtils.performClickWithID(XueXiService.this, video);
 
         videoNum++;
         updateShow("点击短视频,视频数增加");
         dispatchGestureClick(400, MainActivity.height / 3);//模拟点击一条视频新闻
         isSearWebView = true;
+        updateShow("第" + videoNum + "条短视频,正在观看" + videoTime / 1000 + "秒,请勿关闭");
         mHandler.sendEmptyMessageDelayed(ActionType.Video_Back.getStatus(), videoTime);
-        updateShow("第" + videoNum + "条视频,正在观看" + videoTime / 1000 + "秒,请勿关闭");
 
     }
 
     //点击长视频
     public void clickVideo_television() {
         //ServiceUtils.performClickWithID(XueXiService.this, television);
-        path = new Path();
-        path.moveTo(400, MainActivity.height / 2 + 200);
-        path.lineTo(400, 0);
-        dispatchGestureMove(path, 20);
         television_videoNum++;
         updateShow("点击长视频,视频数增加");
         dispatchGestureClick(400, MainActivity.height / 3);//模拟点击一条视频新闻
         isSearWebView = true;
+        updateShow("第" + television_videoNum + "条长视频,正在观看" + videoTime_television / 1000 + "秒,请勿关闭");
         mHandler.sendEmptyMessageDelayed(ActionType.Television_Video_Back.getStatus(), videoTime_television);
-        updateShow("第" + television_videoNum + "条视频,正在观看" + videoTime_television / 1000 + "秒,请勿关闭");
     }
 
 
